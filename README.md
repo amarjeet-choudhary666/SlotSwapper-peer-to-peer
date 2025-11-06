@@ -16,6 +16,8 @@ A peer-to-peer time-slot scheduling application where users can mark their busy 
 - **Database**: PostgreSQL with GORM
 - **Frontend**: React with TypeScript and Vite
 - **Authentication**: JWT tokens
+- **Containerization**: Docker & Docker Compose
+- **Testing**: Go testing with Testify
 
 ## API Endpoints
 
@@ -39,50 +41,75 @@ A peer-to-peer time-slot scheduling application where users can mark their busy 
 
 ## Local Development Setup
 
-### Prerequisites
+### Option 1: Docker Compose (Recommended)
+
+1. **Prerequisites:**
+   - Docker
+   - Docker Compose
+
+2. **Clone and run:**
+    ```bash
+    git clone <repository-url>
+    cd slotswapper
+    docker-compose up --build
+    ```
+
+3. **Access the application:**
+   - Frontend: http://localhost
+   - Backend API: http://localhost:8080
+   - Database: localhost:5432
+
+4. **Environment variables:**
+   Update the secrets in `docker-compose.yml`:
+   - `ACCESS_TOKEN_SECRET`: Your JWT access token secret
+   - `REFRESH_TOKEN_SECRET`: Your JWT refresh token secret
+
+### Option 2: Manual Setup
+
+#### Prerequisites
 - Go 1.19+
 - Node.js 16+
 - PostgreSQL
 
-### Backend Setup
+#### Backend Setup
 1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
+    ```bash
+    cd backend
+    ```
 
 2. Install dependencies:
-   ```bash
-   go mod download
-   ```
+    ```bash
+    go mod download
+    ```
 
 3. Create a `.env` file in the backend directory with the following variables:
-   ```
-   PORT=8080
-   DATABASE_URL=your_postgresql_connection_string
-   ACCESS_TOKEN_SECRET=your_access_token_secret
-   REFRESH_TOKEN_SECRET=your_refresh_token_secret
-   ```
+    ```
+    PORT=8080
+    DATABASE_URL=your_postgresql_connection_string
+    ACCESS_TOKEN_SECRET=your_access_token_secret
+    REFRESH_TOKEN_SECRET=your_refresh_token_secret
+    ```
 
 4. Run the backend:
-   ```bash
-   go run cmd/server/main.go
-   ```
+    ```bash
+    go run cmd/server/main.go
+    ```
 
-### Frontend Setup
+#### Frontend Setup
 1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
+    ```bash
+    cd frontend
+    ```
 
 2. Install dependencies:
-   ```bash
-   npm install
-   ```
+    ```bash
+    npm install
+    ```
 
 3. Start the development server:
-   ```bash
-   npm run dev
-   ```
+    ```bash
+    npm run dev
+    ```
 
 4. Open your browser to `http://localhost:5173`
 
@@ -139,6 +166,41 @@ The application uses three main models:
 5. **Respond to Request**: Responder can ACCEPT or REJECT the request
 6. **On Accept**: Event ownership is swapped, both events set to BUSY
 7. **On Reject**: Both events are set back to SWAPPABLE
+
+## Testing
+
+Run the backend tests:
+```bash
+cd backend
+go test ./internals/api/services/ -v
+```
+
+## Docker Commands
+
+- **Start all services:**
+  ```bash
+  docker-compose up --build
+  ```
+
+- **Start in background:**
+  ```bash
+  docker-compose up -d --build
+  ```
+
+- **Stop services:**
+  ```bash
+  docker-compose down
+  ```
+
+- **View logs:**
+  ```bash
+  docker-compose logs -f [service-name]
+  ```
+
+- **Rebuild and restart:**
+  ```bash
+  docker-compose up --build --force-recreate
+  ```
 
 ## Contributing
 
