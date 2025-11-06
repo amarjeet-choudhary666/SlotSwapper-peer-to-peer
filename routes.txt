@@ -1,0 +1,28 @@
+API Routes Documentation
+
+Base URL: https://servicehive-backend.onrender.com/api
+
+Authentication Routes (Public):
+- POST /api/users/signup - User registration
+- POST /api/users/signin - User login
+
+Protected Routes (Require JWT Authentication):
+
+User Routes:
+- GET /api/users/profile - Get current user profile
+
+Event Routes:
+- POST /api/events - Create a new event
+- GET /api/events - Get user's events
+- PUT /api/events/:id - Update an event
+- DELETE /api/events/:id - Delete an event
+- GET /api/swappable-slots - Get available swappable slots from other users
+
+Swap Routes:
+- POST /api/swap-request - Create a swap request
+- GET /api/swap-requests/incoming - Get incoming swap requests
+- GET /api/swap-requests/outgoing - Get outgoing swap requests
+- POST /api/swap-response/:requestId - Respond to a swap request (accept/reject)
+
+Health Check:
+- GET /ping - Server health check (no auth required)

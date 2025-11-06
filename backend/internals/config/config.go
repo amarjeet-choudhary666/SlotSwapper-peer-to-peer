@@ -13,7 +13,6 @@ type Config struct {
 }
 
 func LoadConfig() *Config {
-	// Load .env file if it exists
 	godotenv.Load()
 
 	viper.AutomaticEnv()

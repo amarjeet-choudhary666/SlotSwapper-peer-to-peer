@@ -14,7 +14,6 @@ func main() {
 
 	r := gin.Default()
 
-	// Configure CORS to allow frontend requests
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:5174"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

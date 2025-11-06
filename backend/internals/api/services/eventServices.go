@@ -37,7 +37,6 @@ func UpdateEvent(eventID uint, userID uint, input *models.Event) (*models.Event,
 		return nil, errors.New("event not found")
 	}
 
-	// Check if event is in swap pending status
 	if event.Status == models.EventStatusSwapPending {
 		logger.Error("Cannot update event while swap request is pending")
 		return nil, errors.New("cannot update event while swap request is pending")
@@ -64,13 +63,11 @@ func UpdateEventPartial(eventID uint, userID uint, input *models.UpdateEventInpu
 		return nil, errors.New("event not found")
 	}
 
-	// Check if event is in swap pending status
 	if event.Status == models.EventStatusSwapPending {
 		logger.Error("Cannot update event while swap request is pending")
 		return nil, errors.New("cannot update event while swap request is pending")
 	}
 
-	// Update only provided fields
 	if input.Title != nil {
 		event.Title = *input.Title
 	}
@@ -129,7 +126,6 @@ func DeleteEvent(eventID uint, userID uint) error {
 func GetSwappableSlots(userID uint) ([]models.Event, error) {
 	var events []models.Event
 
-	// Get all swappable events not owned by the user
 	if db.DB == nil {
 		logger.Error("Database connection is nil")
 		return nil, errors.New("database connection is nil")
@@ -139,10 +135,8 @@ func GetSwappableSlots(userID uint) ([]models.Event, error) {
 		return nil, err
 	}
 
-	// Filter out events that have pending swap requests
 	var filteredEvents []models.Event
 	for _, event := range events {
-		// Filter out events that have pending swap requests
 		var count int64
 		if err := db.DB.Model(&models.SwapRequest{}).Where("status = ? AND (requester_event_id = ? OR responder_event_id = ?)", models.PENDING, event.ID, event.ID).Count(&count).Error; err != nil {
 			logger.Error("Failed to check swap requests for event: " + err.Error())

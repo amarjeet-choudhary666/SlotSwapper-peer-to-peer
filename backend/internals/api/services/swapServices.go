@@ -106,21 +106,17 @@ func RespondToSwapRequest(requestID uint, userID uint, accepted bool) error {
 		return errors.New("swap request not found")
 	}
 
-	// Verify the user is the responder
 	if request.ResponderID != userID {
 		return errors.New("unauthorized to respond to this request")
 	}
 
 	if accepted {
-		// Accept: swap the owners and set status to ACCEPTED
 		request.Status = models.ACCEPTED
 
-		// Swap the owner IDs
 		tempOwnerID := request.RequesterEvent.OwnerID
 		request.RequesterEvent.OwnerID = request.ResponderEvent.OwnerID
 		request.ResponderEvent.OwnerID = tempOwnerID
 
-		// Set events back to BUSY
 		request.RequesterEvent.Status = models.EventStatusBusy
 		request.ResponderEvent.Status = models.EventStatusBusy
 
@@ -134,7 +130,6 @@ func RespondToSwapRequest(requestID uint, userID uint, accepted bool) error {
 			return err
 		}
 	} else {
-		// Reject: set status to REJECTED and events back to SWAPPABLE
 		request.Status = models.REJECTED
 		request.RequesterEvent.Status = models.EventStatusSwappable
 		request.ResponderEvent.Status = models.EventStatusSwappable

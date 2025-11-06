@@ -36,7 +36,6 @@ func JWTAuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 			return
 		}
 
-		// Set user claims in context
 		c.Set("user_id", claims.UserID)
 		c.Set("email", claims.Email)
 
