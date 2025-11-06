@@ -57,7 +57,7 @@ export const authAPI = {
   },
 
   signup: async (userData: SignupRequest): Promise<AuthResponse> => {
-    const response = await api.post('/users/register', userData);
+    await api.post('/users/register', userData);
     const loginResponse = await api.post('/users/signin', {
       email: userData.email,
       password: userData.password

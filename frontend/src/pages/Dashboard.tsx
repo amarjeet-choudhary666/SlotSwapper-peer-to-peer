@@ -10,7 +10,6 @@ const Dashboard: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [swappableSlots, setSwappableSlots] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMarketplaceLoading, setIsMarketplaceLoading] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSwapModalOpen, setIsSwapModalOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<Event | null>(null);
@@ -35,14 +34,11 @@ const Dashboard: React.FC = () => {
 
   const loadSwappableSlots = async () => {
     try {
-      setIsMarketplaceLoading(true);
       const data = await swapsAPI.getSwappableSlots();
       setSwappableSlots(data || []);
     } catch (err: any) {
       setError('Failed to load swappable slots');
       console.error('Error loading swappable slots:', err);
-    } finally {
-      setIsMarketplaceLoading(false);
     }
   };
 
@@ -83,110 +79,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const testSwappableFlow = async () => {
-    try {
-      console.log('=== Testing Swappable Flow ===');
-      
-      // 1. Get current events
-      console.log('1. Fetching current events...');
-      const currentEvents = await eventsAPI.getMyEvents();
-      console.log('Current events:', currentEvents);
-      
-      if (currentEvents.length === 0) {
-        console.log('No events found. Creating a test event first...');
-        const testEvent = await eventsAPI.createEvent({
-          title: "Test Swappable Event",
-          startTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-          endTime: new Date(Date.now() + 24 * 60 * 60 * 1000 + 60 * 60 * 1000).toISOString(),
-        });
-        console.log('Test event created:', testEvent);
-        setEvents(prev => [...prev, testEvent]);
-        
-        // 2. Make it swappable
-        console.log('2. Making event swappable...');
-        const updatedEvent = await eventsAPI.updateEvent(testEvent.id.toString(), { status: 'SWAPPABLE' });
-        console.log('Event made swappable successfully!');
-        
-        // 3. Update local state
-        setEvents(prev => prev.map(event => event.id === testEvent.id ? updatedEvent : event));
-      } else {
-        // Use first BUSY event
-        const busyEvent = currentEvents.find(e => e.status === 'BUSY');
-        if (busyEvent) {
-          console.log('2. Making existing event swappable:', busyEvent);
-          const updatedEvent = await eventsAPI.updateEvent(busyEvent.id.toString(), { status: 'SWAPPABLE' });
-          console.log('Event made swappable successfully!');
-          
-          // Update local state
-          setEvents(prev => prev.map(event => event.id === busyEvent.id ? updatedEvent : event));
-        }
-      }
-      
-      // 4. Check swappable slots
-      console.log('3. Checking swappable slots in marketplace...');
-      const swappableSlots = await swapsAPI.getSwappableSlots();
-      console.log('Swappable slots found:', swappableSlots);
-      
-      console.log('=== Test Complete ===');
-    } catch (error) {
-      console.error('Test failed:', error);
-      setError('Test failed: ' + (error as any).message);
-    }
-  };
 
-  const debugEventUpdate = async () => {
-    try {
-      console.log('=== Debug Event Update ===');
-      
-      // 1. Get current events
-      const currentEvents = await eventsAPI.getMyEvents();
-      console.log('Current events:', currentEvents);
-      
-      if (currentEvents.length === 0) {
-        console.log('No events found. Please create an event first.');
-        return;
-      }
-      
-      // 2. Find first BUSY event
-      const busyEvent = currentEvents.find(e => e.status === 'BUSY');
-      if (!busyEvent) {
-        console.log('No BUSY events found. Please create a BUSY event first.');
-        return;
-      }
-      
-      console.log('Found BUSY event to update:', busyEvent);
-      
-      // 3. Try to update it to SWAPPABLE
-      console.log('Attempting to update event status to SWAPPABLE...');
-      console.log('API call: PUT /api/events/' + busyEvent.id);
-      console.log('Payload:', { status: 'SWAPPABLE' });
-      
-      const updatedEvent = await eventsAPI.updateEvent(busyEvent.id.toString(), { status: 'SWAPPABLE' });
-      console.log('Update successful! Updated event:', updatedEvent);
-      
-      // 4. Update local state
-      setEvents(prev => prev.map(event => 
-        event.id === busyEvent.id ? updatedEvent : event
-      ));
-      
-      // 5. Check if it appears in swappable slots
-      console.log('Checking swappable slots...');
-      const swappableSlots = await swapsAPI.getSwappableSlots();
-      console.log('Swappable slots:', swappableSlots);
-      
-      const foundInMarketplace = swappableSlots.find(slot => slot.id === busyEvent.id);
-      if (foundInMarketplace) {
-        console.log('✅ SUCCESS: Event found in marketplace!');
-      } else {
-        console.log('❌ ISSUE: Event NOT found in marketplace');
-      }
-      
-      console.log('=== Debug Complete ===');
-    } catch (error) {
-      console.error('Debug failed:', error);
-      setError('Debug failed: ' + (error as any).message);
-    }
-  };
 
   const handleStatusChange = async (eventId: number, status: Event['status']) => {
     try {
